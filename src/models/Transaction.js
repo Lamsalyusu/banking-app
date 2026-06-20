@@ -1,5 +1,6 @@
 const db = require('../../config/db');
 const TransactionModel = {
+
     createTransaction: async(senderAccountId, receiverAccountId, amount, type, description)=>{
     const query = `INSERT INTO transactions 
     (sender_account_id, receiver_account_id, amount, transaction_type, status, description) 
@@ -17,7 +18,6 @@ const TransactionModel = {
         return result.rows;
 
     }
-
 
 };
 module.exports = TransactionModel

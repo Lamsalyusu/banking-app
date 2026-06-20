@@ -1,5 +1,6 @@
 const db = require('../../config/db');
 const AccountModel = {
+
     create:async(userId,accountNumber,initialBalance = 0.00)=>{
         const query = `INSERT INTO accounts (user_id,account_number,balance)
         VALUES ($1,$2,$3) RETURNING id,account_number,balance;`
@@ -21,5 +22,4 @@ const AccountModel = {
 
     }
 };
-
 module.exports = AccountModel;
