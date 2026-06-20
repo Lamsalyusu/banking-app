@@ -1,6 +1,7 @@
 const AccountModel = require('../models/AccountModel');
 const TransactionModel = require('../models/Transaction');
 const db = require('../../config/db');
+const authController = require('./authController');
 
 const accountController = {
     // getBalance :async(userId)=>{
@@ -144,3 +145,5 @@ const accountController = {
         }
     }
 };
+
+module.exports =accountController;
