@@ -10,13 +10,13 @@ const AccountModel = {
     },
 
     findByUserID: async(userId)=>{
-        const query = 'SELECT * FROM accounts where user_id = $1';
+        const query = 'SELECT * FROM accounts WHERE user_id = $1';
         const result = await db.query(query,[userId]);
         return result.rows[0];
     },
 
     findByAccountNumber: async(accountNumber) => {
-        const query = 'SELECT * FROM accounts where account_number = $1';
+        const query = 'SELECT * FROM accounts WHERE account_number = $1';
         const result = await db.query(query,[accountNumber]);
         return result.rows[0];
 

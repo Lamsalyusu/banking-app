@@ -12,12 +12,11 @@ const TransactionModel = {
 
     getTransactionByAccountId: async(accountID)=>{
         const query = `SELECT * from transactions 
-        where sender_account_id = $1 OR receiver_account_id =$1 
+        WHERE sender_account_id = $1 OR receiver_account_id =$1 
         ORDER BY created_at DESC`;
         const result = await db.query(query,[accountID]);
         return result.rows;
 
     }
-
 };
 module.exports = TransactionModel

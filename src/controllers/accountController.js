@@ -81,7 +81,8 @@ const accountController = {
         try{
             const userId = req.user.id;
             const { amount,receiverAccountNumber } = req.body;
-            if(!receiverAccountNmber){
+
+            if(!receiverAccountNumber){
                 return sessionStorage.status(400).json({error:'Recipient Account number is required'})
             }
             if (!amount || isNaN(amount) || amount <= 0) 

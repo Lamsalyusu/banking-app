@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureBank Nepal — Withdraw</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--navy:#0a1628;--accent:#1a56db;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f3f4f6;--white:#fff;--success:#16a34a;--danger:#dc2626;--sidebar-w:240px}
+  html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:60px 1fr;min-height:100vh}
+  .topbar{grid-column:1/-1;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:100}
+  .topbar-logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+  .logo-icon i{color:#fff;font-size:15px}
+  .logo-name{color:#fff;font-size:14px;font-weight:600}
+  .topbar-right{display:flex;align-items:center;gap:8px}
+  .tb-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .tb-btn i{color:rgba(255,255,255,0.7);font-size:14px}
+  .avatar-btn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:none;border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer}
+  .avatar{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+  .avatar-name{color:rgba(255,255,255,0.8);font-size:12px;font-weight:500}
+  .sidebar{background:var(--white);border-right:1px solid var(--border);padding:1.5rem 0;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px)}
+  .nav-section-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;padding:0 1.25rem;margin:16px 0 6px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;font-size:13px;color:var(--muted);cursor:pointer;text-decoration:none;border-right:2px solid transparent;transition:all 0.1s}
+  .nav-item i{font-size:16px;width:18px;text-align:center}
+  .nav-item:hover{background:var(--bg);color:var(--text)}
+  .nav-item.active{color:var(--accent);background:#eff6ff;border-right-color:var(--accent);font-weight:600}
+  .nav-bottom{margin-top:auto;padding:1rem 0;border-top:1px solid var(--border)}
+  .main{padding:1.5rem;display:flex;flex-direction:column;align-items:center}
+  .page-title{font-size:20px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;align-self:flex-start}
+  .page-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;align-self:flex-start}
+  .content-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;width:100%;max-width:900px}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+  .card-title{font-size:15px;font-weight:700;margin-bottom:4px}
+  .card-sub{font-size:12px;color:var(--muted);margin-bottom:1.5rem}
+  .quick-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+  .qa{padding:10px;border:1.5px solid var(--border);border-radius:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;background:var(--bg);color:var(--text);transition:all 0.1s}
+  .qa:hover{border-color:var(--danger);color:var(--danger);background:#fef2f2}
+  .qa.selected{border-color:var(--danger);color:var(--danger);background:#fef2f2}
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+  .input-wrap{position:relative;display:flex;align-items:center}
+  .input-wrap .prefix{position:absolute;left:14px;font-size:13px;font-weight:600;color:var(--muted);pointer-events:none}
+  .input-wrap input{width:100%;padding:12px 14px 12px 60px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-weight:700;color:var(--text);background:var(--bg);outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+  .input-wrap input:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.1);background:#fff}
+  .input-wrap input::placeholder{color:#d1d5db;font-weight:400;font-size:14px}
+  .btn-action{width:100%;padding:13px;background:var(--danger);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.15s,transform 0.1s}
+  .btn-action:hover{opacity:0.9}
+  .btn-action:active{transform:scale(0.99)}
+  .summary-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:16px}
+  .summary-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:13px}
+  .summary-row:not(:last-child){border-bottom:1px solid var(--border)}
+  .summary-label{color:var(--muted)}
+  .summary-value{font-weight:600}
+  .summary-value.big{font-size:18px;color:var(--danger)}
+  .bal-pill{display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:4px 12px;font-size:12px;color:var(--success);font-weight:600;margin-bottom:16px}
+  .warn-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px;display:flex;gap:10px;font-size:12px;color:#92400e;line-height:1.6;margin-top:12px}
+  .alert{display:none;border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:16px;align-items:center;gap:10px}
+  .alert.show{display:flex}
+  .alert.success{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--success)}
+  .alert.error{background:#fef2f2;border:1px solid #fecaca;color:var(--danger)}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="topbar">
+    <div class="topbar-logo"><div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div><span class="logo-name">SecureBank Nepal</span></div>
+    <div class="topbar-right">
+      <button class="tb-btn"><i class="fa-regular fa-bell"></i></button>
+      <button class="avatar-btn" onclick="logout()"><div class="avatar" id="avatarInitials">YL</div><span class="avatar-name" id="topbarName">User</span></button>
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div>
+      <div class="nav-section-label">Main</div>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="deposit.html" class="nav-item"><i class="fa-solid fa-arrow-down-to-bracket"></i> Deposit</a>
+      <a href="withdraw.html" class="nav-item active"><i class="fa-solid fa-arrow-up-from-bracket"></i> Withdraw</a>
+      <a href="transfer.html" class="nav-item"><i class="fa-solid fa-right-left"></i> Transfer</a>
+      <div class="nav-section-label">Reports</div>
+      <a href="transactions.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a>
+    </div>
+    <div class="nav-bottom">
+      <a href="#" class="nav-item"><i class="fa-regular fa-user"></i> Profile</a>
+      <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-title">Withdraw Funds</div>
+    <div class="page-sub">Withdraw money from your SecureBank account</div>
+    <div class="content-grid">
+      <div class="card">
+        <div class="card-title">Enter withdrawal amount</div>
+        <div class="card-sub">Select a quick amount or enter a custom value</div>
+        <div class="bal-pill"><i class="fa-solid fa-wallet"></i> Available: <span id="availBal">Loading...</span></div>
+        <div class="quick-amounts">
+          <div class="qa" onclick="setAmount(500)">NPR 500</div>
+          <div class="qa" onclick="setAmount(1000)">NPR 1,000</div>
+          <div class="qa" onclick="setAmount(2000)">NPR 2,000</div>
+          <div class="qa" onclick="setAmount(5000)">NPR 5,000</div>
+          <div class="qa" onclick="setAmount(10000)">NPR 10,000</div>
+          <div class="qa" onclick="setAmount(25000)">NPR 25,000</div>
+        </div>
+        <div class="form-group">
+          <label>Amount (NPR)</label>
+          <div class="input-wrap"><span class="prefix">NPR</span><input type="number" id="amount" placeholder="0.00" min="1" oninput="updateSummary()" /></div>
+        </div>
+        <div id="alertBox" class="alert"></div>
+        <button class="btn-action" onclick="handleWithdraw()"><i class="fa-solid fa-arrow-up"></i>Confirm Withdrawal</button>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title" style="margin-bottom:12px">Withdrawal summary</div>
+          <div class="summary-card">
+            <div class="summary-row"><span class="summary-label">Withdrawal amount</span><span class="summary-value" id="sumAmount">NPR 0.00</span></div>
+            <div class="summary-row"><span class="summary-label">Transaction fee</span><span class="summary-value" style="color:var(--success)">Free</span></div>
+            <div class="summary-row"><span class="summary-label">Total deducted</span><span class="summary-value big" id="sumTotal">NPR 0.00</span></div>
+          </div>
+          <div class="summary-row" style="padding:0"><span class="summary-label" style="font-size:12px">Remaining balance</span><span class="summary-value" id="remBal" style="font-size:12px">—</span></div>
+        </div>
+        <div class="warn-box"><i class="fa-solid fa-triangle-exclamation"></i><span>Ensure sufficient balance before withdrawing. Your account cannot go below NPR 0.</span></div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'login.html';
+  let currentBalance = 0;
+  document.getElementById('topbarName').textContent = (user.fullName||'').split(' ')[0];
+  document.getElementById('avatarInitials').textContent = (user.fullName||'U').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  async function loadBalance() {
+    try {
+      const res = await fetch('http://localhost:5000/api/account/getBalance', {headers:{'Authorization':`Bearer ${token}`}});
+      const data = await res.json();
+      currentBalance = parseFloat(data.balance);
+      document.getElementById('availBal').textContent = `NPR ${currentBalance.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+    } catch(e) {}
+  }
+  function setAmount(val) {
+    document.getElementById('amount').value = val;
+    document.querySelectorAll('.qa').forEach(q => q.classList.remove('selected'));
+    event.target.classList.add('selected');
+    updateSummary();
+  }
+  function updateSummary() {
+    const amt = parseFloat(document.getElementById('amount').value) || 0;
+    const fmt = v => `NPR ${v.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+    document.getElementById('sumAmount').textContent = fmt(amt);
+    document.getElementById('sumTotal').textContent = fmt(amt);
+    const rem = currentBalance - amt;
+    document.getElementById('remBal').textContent = rem >= 0 ? fmt(rem) : '⚠ Insufficient funds';
+    document.getElementById('remBal').style.color = rem >= 0 ? '' : 'var(--danger)';
+  }
+  async function handleWithdraw() {
+    const amount = parseFloat(document.getElementById('amount').value);
+    const btn = document.querySelector('.btn-action');
+    const alertBox = document.getElementById('alertBox');
+    alertBox.className = 'alert'; alertBox.style.display = 'none';
+    if (!amount || amount <= 0) { showAlert('error','Please enter a valid withdrawal amount.'); return; }
+    if (amount > currentBalance) { showAlert('error','Insufficient funds in your account.'); return; }
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
+    try {
+      const res = await fetch('http://localhost:5000/api/account/withdraw', {method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({amount})});
+      const data = await res.json();
+      if (res.ok) {
+        showAlert('success',`NPR ${amount.toLocaleString('en-IN',{minimumFractionDigits:2})} withdrawn successfully!`);
+        document.getElementById('amount').value = '';
+        updateSummary(); loadBalance();
+      } else { showAlert('error', data.error || 'Withdrawal failed.'); }
+    } catch(e) { showAlert('error','Cannot connect to server.'); }
+    btn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>Confirm Withdrawal'; btn.disabled = false;
+  }
+  function showAlert(type, msg) {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.className = `alert ${type} show`;
+    alertBox.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-circle-exclamation'}"></i>${msg}`;
+  }
+  function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+  loadBalance();
+</script>
+</body>
+</html>

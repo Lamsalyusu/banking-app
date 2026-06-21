@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureBank Nepal — Register</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --navy:#0a1628;--accent:#1a56db;--accent-hover:#1447c0;--gold:#f59e0b;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f9fafb;--white:#ffffff;--danger:#dc2626;--success:#16a34a; }
+  html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .page{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+  .left{background:var(--navy);display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden}
+  .left::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(26,86,219,0.15)}
+  .left-logo{display:flex;align-items:center;gap:12px;z-index:1}
+  .left-logo-icon{width:40px;height:40px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+  .left-logo-icon i{color:#fff;font-size:18px}
+  .left-logo-text .name{color:#fff;font-size:16px;font-weight:600}
+  .left-logo-text .tagline{color:rgba(255,255,255,0.45);font-size:11px;margin-top:1px}
+  .left-mid{z-index:1}
+  .left-mid h1{font-size:26px;font-weight:700;color:#fff;line-height:1.3;letter-spacing:-0.02em;margin-bottom:12px}
+  .left-mid p{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;max-width:280px}
+  .steps{margin-top:2rem;display:flex;flex-direction:column;gap:14px;z-index:1}
+  .step{display:flex;align-items:flex-start;gap:12px}
+  .step-num{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px}
+  .step-text .title{font-size:13px;font-weight:600;color:#fff}
+  .step-text .desc{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px}
+  .left-footer{z-index:1;display:flex;gap:8px}
+  .trust-badge{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:6px 12px;font-size:11px;color:rgba(255,255,255,0.5)}
+  .trust-badge i{color:var(--gold);font-size:12px}
+  .right{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem 2rem;background:var(--white)}
+  .form-box{width:100%;max-width:380px}
+  .form-header{margin-bottom:1.5rem}
+  .form-header h2{font-size:22px;font-weight:700;letter-spacing:-0.02em}
+  .form-header p{font-size:13px;color:var(--muted);margin-top:4px}
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+  .input-wrap{position:relative;display:flex;align-items:center}
+  .input-wrap i{position:absolute;left:14px;color:var(--muted);font-size:14px;pointer-events:none}
+  .input-wrap input{width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--bg);transition:border-color 0.15s,box-shadow 0.15s;outline:none}
+  .input-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,0.1);background:#fff}
+  .input-wrap input::placeholder{color:#9ca3af}
+  .btn-submit{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s,transform 0.1s;margin-top:4px}
+  .btn-submit:hover{background:var(--accent-hover)}
+  .btn-submit:active{transform:scale(0.99)}
+  .terms{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6}
+  .terms a{color:var(--accent);text-decoration:none}
+  .divider{display:flex;align-items:center;gap:10px;margin:16px 0;font-size:11px;color:var(--muted)}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+  .login-link{text-align:center;font-size:13px;color:var(--muted)}
+  .login-link a{color:var(--accent);font-weight:600;text-decoration:none}
+  .error-msg{display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--danger);margin-bottom:14px;align-items:center;gap:8px}
+  .error-msg.show{display:flex}
+  .success-msg{display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--success);margin-bottom:14px;align-items:center;gap:8px}
+  .success-msg.show{display:flex}
+  @media(max-width:768px){.page{grid-template-columns:1fr}.left{display:none}.row-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="left">
+    <div class="left-logo">
+      <div class="left-logo-icon"><i class="fa-solid fa-building-columns"></i></div>
+      <div class="left-logo-text"><div class="name">SecureBank Nepal</div><div class="tagline">Digital Banking Platform</div></div>
+    </div>
+    <div class="left-mid">
+      <h1>Open your account in minutes</h1>
+      <p>Join thousands of Nepalis who manage their money digitally with SecureBank.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text"><div class="title">Create your account</div><div class="desc">Fill in your details and set a secure password</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text"><div class="title">Get your account number</div><div class="desc">An account is automatically created for you</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text"><div class="title">Start banking</div><div class="desc">Deposit, withdraw, and transfer instantly</div></div></div>
+      </div>
+    </div>
+    <div class="left-footer">
+      <div class="trust-badge"><i class="fa-solid fa-shield-halved"></i> NRB Licensed</div>
+      <div class="trust-badge"><i class="fa-solid fa-lock"></i> SSL Secured</div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="form-box">
+      <div class="form-header"><h2>Create your account</h2><p>It's free and takes less than 2 minutes</p></div>
+      <div class="error-msg" id="errorMsg"><i class="fa-solid fa-circle-exclamation"></i><span id="errorText">Something went wrong.</span></div>
+      <div class="success-msg" id="successMsg"><i class="fa-solid fa-circle-check"></i><span>Account created! Redirecting to login...</span></div>
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Full name</label>
+          <div class="input-wrap"><i class="fa-regular fa-user"></i><input type="text" id="fullName" placeholder="Yuyutsu Lamsal" required /></div>
+        </div>
+        <div class="form-group">
+          <label>Email address</label>
+          <div class="input-wrap"><i class="fa-regular fa-envelope"></i><input type="email" id="email" placeholder="you@email.com" required /></div>
+        </div>
+        <div class="row-2">
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="password" placeholder="Min. 8 characters" required minlength="8" /></div>
+          </div>
+          <div class="form-group">
+            <label>Confirm password</label>
+            <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="confirmPassword" placeholder="Repeat password" required /></div>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit"><i class="fa-solid fa-user-plus"></i>Create account</button>
+      </form>
+      <div class="terms">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
+      <div class="divider">or</div>
+      <div class="login-link">Already have an account? <a href="login.html">Sign in</a></div>
+    </div>
+  </div>
+</div>
+<script>
+  async function handleRegister(e) {
+    e.preventDefault();
+    const fullName = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const errorMsg = document.getElementById('errorMsg');
+    const errorText = document.getElementById('errorText');
+    const successMsg = document.getElementById('successMsg');
+    const btn = document.querySelector('.btn-submit');
+    errorMsg.classList.remove('show'); successMsg.classList.remove('show');
+    if (password !== confirmPassword) { errorText.textContent = 'Passwords do not match.'; errorMsg.classList.add('show'); return; }
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...'; btn.disabled = true;
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fullName,email,password}) });
+      const data = await res.json();
+      if (res.ok) { successMsg.classList.add('show'); setTimeout(() => window.location.href='login.html', 2000); }
+      else { errorText.textContent = data.error || 'Registration failed.'; errorMsg.classList.add('show'); btn.innerHTML='<i class="fa-solid fa-user-plus"></i>Create account'; btn.disabled=false; }
+    } catch(err) { errorText.textContent='Cannot connect to server.'; errorMsg.classList.add('show'); btn.innerHTML='<i class="fa-solid fa-user-plus"></i>Create account'; btn.disabled=false; }
+  }
+</script>
+</body>
+</html>

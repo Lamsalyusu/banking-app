@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureBank Nepal — Transactions</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--navy:#0a1628;--accent:#1a56db;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f3f4f6;--white:#fff;--success:#16a34a;--danger:#dc2626;--sidebar-w:240px}
+  html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:60px 1fr;min-height:100vh}
+  .topbar{grid-column:1/-1;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:100}
+  .topbar-logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+  .logo-icon i{color:#fff;font-size:15px}
+  .logo-name{color:#fff;font-size:14px;font-weight:600}
+  .topbar-right{display:flex;align-items:center;gap:8px}
+  .tb-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .tb-btn i{color:rgba(255,255,255,0.7);font-size:14px}
+  .avatar-btn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:none;border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer}
+  .avatar{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+  .avatar-name{color:rgba(255,255,255,0.8);font-size:12px;font-weight:500}
+  .sidebar{background:var(--white);border-right:1px solid var(--border);padding:1.5rem 0;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px)}
+  .nav-section-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;padding:0 1.25rem;margin:16px 0 6px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;font-size:13px;color:var(--muted);cursor:pointer;text-decoration:none;border-right:2px solid transparent;transition:all 0.1s}
+  .nav-item i{font-size:16px;width:18px;text-align:center}
+  .nav-item:hover{background:var(--bg);color:var(--text)}
+  .nav-item.active{color:var(--accent);background:#eff6ff;border-right-color:var(--accent);font-weight:600}
+  .nav-bottom{margin-top:auto;padding:1rem 0;border-top:1px solid var(--border)}
+  .main{padding:1.5rem}
+  .page-title{font-size:20px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px}
+  .page-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem}
+  .filters{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .filter-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:var(--white);color:var(--muted);transition:all 0.1s}
+  .filter-btn.active{border-color:var(--accent);color:var(--accent);background:#eff6ff}
+  .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1rem}
+  .stat-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+  .stat-value{font-size:18px;font-weight:700;letter-spacing:-0.02em}
+  .stat-value.pos{color:var(--success)}
+  .stat-value.neg{color:var(--danger)}
+  .tx-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .tx-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+  .tx-count{font-size:12px;color:var(--muted)}
+  .tx-row{display:flex;align-items:center;gap:12px;padding:12px 1.25rem;border-bottom:1px solid var(--border);transition:background 0.1s}
+  .tx-row:last-child{border-bottom:none}
+  .tx-row:hover{background:var(--bg)}
+  .tx-dot{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .tx-dot.d{background:#f0fdf4} .tx-dot.d i{color:var(--success);font-size:16px}
+  .tx-dot.w{background:#fef2f2} .tx-dot.w i{color:var(--danger);font-size:16px}
+  .tx-dot.t{background:#eff6ff} .tx-dot.t i{color:var(--accent);font-size:16px}
+  .tx-info{flex:1}
+  .tx-name{font-size:13px;font-weight:600}
+  .tx-meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .tx-right{text-align:right}
+  .tx-amount{font-size:14px;font-weight:700}
+  .tx-amount.pos{color:var(--success)}
+  .tx-amount.neg{color:var(--danger)}
+  .badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:3px;font-weight:600}
+  .badge.success{background:#f0fdf4;color:var(--success)}
+  .empty{padding:3rem;text-align:center;color:var(--muted);font-size:13px}
+  .empty i{font-size:36px;margin-bottom:10px;display:block;opacity:0.25}
+  .loading{padding:2rem;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="topbar">
+    <div class="topbar-logo"><div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div><span class="logo-name">SecureBank Nepal</span></div>
+    <div class="topbar-right">
+      <button class="tb-btn"><i class="fa-regular fa-bell"></i></button>
+      <button class="avatar-btn" onclick="logout()"><div class="avatar" id="avatarInitials">YL</div><span class="avatar-name" id="topbarName">User</span></button>
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div>
+      <div class="nav-section-label">Main</div>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="deposit.html" class="nav-item"><i class="fa-solid fa-arrow-down-to-bracket"></i> Deposit</a>
+      <a href="withdraw.html" class="nav-item"><i class="fa-solid fa-arrow-up-from-bracket"></i> Withdraw</a>
+      <a href="transfer.html" class="nav-item"><i class="fa-solid fa-right-left"></i> Transfer</a>
+      <div class="nav-section-label">Reports</div>
+      <a href="transactions.html" class="nav-item active"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a>
+    </div>
+    <div class="nav-bottom">
+      <a href="#" class="nav-item"><i class="fa-regular fa-user"></i> Profile</a>
+      <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-title">Transaction History</div>
+    <div class="page-sub">All your deposits, withdrawals and transfers</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total deposits</div><div class="stat-value pos" id="totalIn">NPR 0</div></div>
+      <div class="stat-card"><div class="stat-label">Total withdrawals</div><div class="stat-value neg" id="totalOut">NPR 0</div></div>
+      <div class="stat-card"><div class="stat-label">Total transactions</div><div class="stat-value" id="totalCount">0</div></div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filter('all',this)">All</button>
+      <button class="filter-btn" onclick="filter('deposit',this)"><i class="fa-solid fa-arrow-down" style="font-size:10px"></i> Deposits</button>
+      <button class="filter-btn" onclick="filter('withdraw',this)"><i class="fa-solid fa-arrow-up" style="font-size:10px"></i> Withdrawals</button>
+      <button class="filter-btn" onclick="filter('transfer',this)"><i class="fa-solid fa-right-left" style="font-size:10px"></i> Transfers</button>
+    </div>
+    <div class="tx-card">
+      <div class="tx-header">
+        <div style="font-size:14px;font-weight:700">Transactions</div>
+        <div class="tx-count" id="txCount">Loading...</div>
+      </div>
+      <div id="txList"><div class="loading"><i class="fa-solid fa-spinner fa-spin" style="display:block;font-size:24px;margin-bottom:8px;opacity:0.4"></i>Loading transactions...</div></div>
+    </div>
+  </main>
+</div>
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'login.html';
+  document.getElementById('topbarName').textContent = (user.fullName||'').split(' ')[0];
+  document.getElementById('avatarInitials').textContent = (user.fullName||'U').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  let allTx = [];
+  async function loadTransactions() {
+    try {
+      const res = await fetch('http://localhost:5000/api/account/getTransactions', {headers:{'Authorization':`Bearer ${token}`}});
+      const data = await res.json();
+      allTx = data.transactions || [];
+      calcStats(allTx);
+      renderTx(allTx);
+    } catch(e) { document.getElementById('txList').innerHTML = '<div class="empty"><i class="fa-solid fa-circle-exclamation"></i>Could not load transactions.</div>'; }
+  }
+  function calcStats(txs) {
+    let inAmt=0, outAmt=0;
+    txs.forEach(tx => { if(tx.transaction_type==='deposit') inAmt+=parseFloat(tx.amount); else outAmt+=parseFloat(tx.amount); });
+    const fmt = v => `NPR ${v.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+    document.getElementById('totalIn').textContent = fmt(inAmt);
+    document.getElementById('totalOut').textContent = fmt(outAmt);
+    document.getElementById('totalCount').textContent = txs.length;
+  }
+  function renderTx(txs) {
+    const el = document.getElementById('txList');
+    document.getElementById('txCount').textContent = `${txs.length} transaction${txs.length!==1?'s':''}`;
+    if (!txs.length) { el.innerHTML = '<div class="empty"><i class="fa-solid fa-inbox"></i>No transactions found</div>'; return; }
+    el.innerHTML = txs.map(tx => {
+      const type = tx.transaction_type;
+      const isD = type==='deposit', isW = type==='withdraw';
+      const cls = isD?'d':isW?'w':'t';
+      const icon = isD?'fa-arrow-down':isW?'fa-arrow-up':'fa-right-left';
+      const label = type.charAt(0).toUpperCase()+type.slice(1);
+      const amtCls = isD?'pos':'neg';
+      const prefix = isD?'+':'-';
+      const date = new Date(tx.created_at).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div class="tx-row">
+        <div class="tx-dot ${cls}"><i class="fa-solid ${icon}"></i></div>
+        <div class="tx-info"><div class="tx-name">${label}${tx.description?` — ${tx.description}`:''}</div><div class="tx-meta">${date}</div></div>
+        <div class="tx-right">
+          <div class="tx-amount ${amtCls}">${prefix}NPR ${parseFloat(tx.amount).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+          <span class="badge success"><i class="fa-solid fa-check"></i>${tx.status||'success'}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function filter(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = type==='all' ? allTx : allTx.filter(tx=>tx.transaction_type===type);
+    renderTx(filtered);
+  }
+  function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+  loadTransactions();
+</script>
+</body>
+</html>

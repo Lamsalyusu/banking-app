@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureBank Nepal — Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0a1628; --navy-mid: #0d2144; --accent: #1a56db;
+    --gold: #f59e0b; --text: #111827; --muted: #6b7280;
+    --border: #e5e7eb; --bg: #f3f4f6; --white: #ffffff;
+    --danger: #dc2626; --success: #16a34a; --sidebar-w: 240px;
+  }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; grid-template-rows: 60px 1fr; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .logo-icon i { color: #fff; font-size: 15px; }
+  .logo-name { color: #fff; font-size: 14px; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .tb-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .tb-btn i { color: rgba(255,255,255,0.7); font-size: 14px; }
+  .tb-btn:hover { background: rgba(255,255,255,0.14); }
+  .avatar-btn { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: none; border-radius: 20px; padding: 4px 12px 4px 4px; cursor: pointer; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+  .avatar-name { color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 500; }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--white); border-right: 1px solid var(--border);
+    padding: 1.5rem 0; display: flex; flex-direction: column;
+    position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto;
+  }
+  .nav-section-label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; padding: 0 1.25rem; margin: 16px 0 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 1.25rem; font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: none; border-right: 2px solid transparent; transition: all 0.1s; }
+  .nav-item i { font-size: 16px; width: 18px; text-align: center; }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { color: var(--accent); background: #eff6ff; border-right-color: var(--accent); font-weight: 600; }
+  .nav-bottom { margin-top: auto; padding: 1rem 0; border-top: 1px solid var(--border); }
+
+  /* MAIN */
+  .main { padding: 1.5rem; overflow-y: auto; }
+  .page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+
+  /* BALANCE CARDS */
+  .balance-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }
+  .bal-main { background: linear-gradient(135deg, #0a1628 0%, #1a3a8f 100%); border-radius: 14px; padding: 1.5rem; color: #fff; position: relative; overflow: hidden; }
+  .bal-main::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+  .bal-label { font-size: 11px; opacity: 0.6; margin-bottom: 8px; }
+  .bal-amount { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; }
+  .bal-acc { font-size: 11px; opacity: 0.45; margin-top: 6px; letter-spacing: 0.05em; }
+  .bal-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.12); border-radius: 20px; padding: 4px 10px; font-size: 10px; margin-top: 12px; }
+  .bal-badge i { font-size: 10px; }
+  .bal-stat { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; }
+  .bal-stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .bal-stat-amount { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .bal-stat-change { display: flex; align-items: center; gap: 4px; font-size: 11px; margin-top: 6px; }
+  .up { color: var(--success); }
+  .down { color: var(--danger); }
+
+  /* QUICK ACTIONS */
+  .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .action-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; transition: transform 0.1s, border-color 0.1s; }
+  .action-card:hover { transform: translateY(-2px); border-color: #93c5fd; }
+  .action-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .action-icon.dep { background: #f0fdf4; } .action-icon.dep i { color: var(--success); }
+  .action-icon.wit { background: #fef2f2; } .action-icon.wit i { color: var(--danger); }
+  .action-icon.tra { background: #eff6ff; } .action-icon.tra i { color: var(--accent); }
+  .action-icon.his { background: #fffbeb; } .action-icon.his i { color: var(--gold); }
+  .action-icon i { font-size: 20px; }
+  .action-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .action-sub { font-size: 10px; color: var(--muted); text-align: center; }
+
+  /* TRANSACTIONS */
+  .tx-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .tx-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .tx-header-title { font-size: 14px; font-weight: 700; }
+  .view-all { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; text-decoration: none; }
+  .tx-row { display: flex; align-items: center; gap: 12px; padding: 12px 1.25rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-row:hover { background: var(--bg); }
+  .tx-dot { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tx-dot.d { background: #f0fdf4; } .tx-dot.d i { color: var(--success); font-size: 16px; }
+  .tx-dot.w { background: #fef2f2; } .tx-dot.w i { color: var(--danger); font-size: 16px; }
+  .tx-dot.t { background: #eff6ff; } .tx-dot.t i { color: var(--accent); font-size: 16px; }
+  .tx-info { flex: 1; }
+  .tx-name { font-size: 13px; font-weight: 600; }
+  .tx-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .tx-right { text-align: right; }
+  .tx-amount { font-size: 14px; font-weight: 700; }
+  .tx-amount.pos { color: var(--success); }
+  .tx-amount.neg { color: var(--danger); }
+  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 3px; font-weight: 500; }
+  .badge.success { background: #f0fdf4; color: var(--success); }
+  .badge.pending { background: #fffbeb; color: #92400e; }
+  .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 13px; }
+  .empty i { font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.3; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div>
+      <span class="logo-name">SecureBank Nepal</span>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-btn"><i class="fa-regular fa-bell"></i></button>
+      <button class="tb-btn"><i class="fa-solid fa-gear"></i></button>
+      <button class="avatar-btn" onclick="logout()">
+        <div class="avatar" id="avatarInitials">YL</div>
+        <span class="avatar-name" id="topbarName">Yuyutsu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="nav-section-label">Main</div>
+      <a href="dashboard.html" class="nav-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="deposit.html" class="nav-item"><i class="fa-solid fa-arrow-down-to-bracket"></i> Deposit</a>
+      <a href="withdraw.html" class="nav-item"><i class="fa-solid fa-arrow-up-from-bracket"></i> Withdraw</a>
+      <a href="transfer.html" class="nav-item"><i class="fa-solid fa-right-left"></i> Transfer</a>
+      <div class="nav-section-label">Reports</div>
+      <a href="transactions.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a>
+      <a href="#" class="nav-item"><i class="fa-regular fa-file-lines"></i> Statements</a>
+    </div>
+    <div class="nav-bottom">
+      <a href="#" class="nav-item"><i class="fa-regular fa-user"></i> Profile</a>
+      <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub" id="greeting">Good morning — here's your account overview</div>
+
+    <!-- BALANCE -->
+    <div class="balance-grid">
+      <div class="bal-main">
+        <div class="bal-label">Total Balance</div>
+        <div class="bal-amount" id="balAmount">NPR —</div>
+        <div class="bal-acc" id="accNumber">Loading...</div>
+        <div class="bal-badge"><i class="fa-solid fa-shield-halved"></i> Verified account</div>
+      </div>
+      <div class="bal-stat">
+        <div class="bal-stat-label">Money in this month</div>
+        <div class="bal-stat-amount" id="monthIn">NPR 0</div>
+        <div class="bal-stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> <span>Deposits & transfers</span></div>
+      </div>
+      <div class="bal-stat">
+        <div class="bal-stat-label">Money out this month</div>
+        <div class="bal-stat-amount" id="monthOut">NPR 0</div>
+        <div class="bal-stat-change down"><i class="fa-solid fa-arrow-trend-down"></i> <span>Withdrawals & transfers</span></div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-title">Quick actions</div>
+    <div class="actions-grid">
+      <a href="deposit.html" class="action-card">
+        <div class="action-icon dep"><i class="fa-solid fa-arrow-down"></i></div>
+        <div class="action-label">Deposit</div>
+        <div class="action-sub">Add funds</div>
+      </a>
+      <a href="withdraw.html" class="action-card">
+        <div class="action-icon wit"><i class="fa-solid fa-arrow-up"></i></div>
+        <div class="action-label">Withdraw</div>
+        <div class="action-sub">Take out cash</div>
+      </a>
+      <a href="transfer.html" class="action-card">
+        <div class="action-icon tra"><i class="fa-solid fa-right-left"></i></div>
+        <div class="action-label">Transfer</div>
+        <div class="action-sub">Send money</div>
+      </a>
+      <a href="transactions.html" class="action-card">
+        <div class="action-icon his"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="action-label">History</div>
+        <div class="action-sub">View all</div>
+      </a>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="tx-card">
+      <div class="tx-header">
+        <div class="tx-header-title">Recent transactions</div>
+        <a href="transactions.html" class="view-all">View all →</a>
+      </div>
+      <div id="txList"><div class="empty"><i class="fa-solid fa-inbox"></i>Loading transactions...</div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'index.html';
+
+  // Greet user
+  const hr = new Date().getHours();
+  const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').textContent = `${greet}, ${user.fullName || 'there'} — here's your account overview`;
+  document.getElementById('topbarName').textContent = (user.fullName || '').split(' ')[0];
+  document.getElementById('avatarInitials').textContent = (user.fullName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+
+  async function loadData() {
+    try {
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const [balRes, txRes] = await Promise.all([
+        fetch('http://localhost:5000/api/account/getBalance', { headers }),
+        fetch('http://localhost:5000/api/account/getTransactions', { headers })
+      ]);
+      if (!balRes.ok) { logout(); return; }
+      const balData = await balRes.json();
+      document.getElementById('balAmount').textContent = `NPR ${parseFloat(balData.balance).toLocaleString('en-IN', {minimumFractionDigits:2})}`;
+      document.getElementById('accNumber').textContent = `Account · ${balData.account_number || '—'}`;
+
+      if (txRes.ok) {
+        const txData = await txRes.json();
+        const txs = txData.transactions || [];
+        renderTransactions(txs.slice(0,5));
+        calcMonthly(txs);
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  function renderTransactions(txs) {
+    const el = document.getElementById('txList');
+    if (!txs.length) { el.innerHTML = '<div class="empty"><i class="fa-solid fa-inbox"></i>No transactions yet</div>'; return; }
+    el.innerHTML = txs.map(tx => {
+      const type = tx.transaction_type;
+      const isDeposit = type === 'deposit';
+      const isWithdraw = type === 'withdraw';
+      const cls = isDeposit ? 'd' : isWithdraw ? 'w' : 't';
+      const icon = isDeposit ? 'fa-arrow-down' : isWithdraw ? 'fa-arrow-up' : 'fa-right-left';
+      const amtClass = isDeposit ? 'pos' : 'neg';
+      const amtPrefix = isDeposit ? '+' : '-';
+      const label = type.charAt(0).toUpperCase() + type.slice(1);
+      const date = new Date(tx.created_at).toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div class="tx-row">
+        <div class="tx-dot ${cls}"><i class="fa-solid ${icon}"></i></div>
+        <div class="tx-info"><div class="tx-name">${label}</div><div class="tx-meta">${date}</div></div>
+        <div class="tx-right">
+          <div class="tx-amount ${amtClass}">${amtPrefix}NPR ${parseFloat(tx.amount).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+          <span class="badge success"><i class="fa-solid fa-check"></i> ${tx.status || 'success'}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function calcMonthly(txs) {
+    const now = new Date(); const month = now.getMonth(); const year = now.getFullYear();
+    let inAmt = 0, outAmt = 0;
+    txs.forEach(tx => {
+      const d = new Date(tx.created_at);
+      if (d.getMonth() === month && d.getFullYear() === year) {
+        if (tx.transaction_type === 'deposit') inAmt += parseFloat(tx.amount);
+        else outAmt += parseFloat(tx.amount);
+      }
+    });
+    document.getElementById('monthIn').textContent = `NPR ${inAmt.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+    document.getElementById('monthOut').textContent = `NPR ${outAmt.toLocaleString('en-IN',{minimumFractionDigits:2})}`;
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  loadData();
+</script>
+</body>
+</html>
