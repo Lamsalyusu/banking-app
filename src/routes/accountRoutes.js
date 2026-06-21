@@ -7,6 +7,6 @@ router.get('/getBalance',authmiddleware,accountController.getBalance);
 router.post('/deposit',authmiddleware,accountController.deposit)
 router.post('/withdraw',authmiddleware,accountController.withdraw);
 router.post('/transfer',authmiddleware,accountController.transfer);
-router.get('/getTrasactions',authmiddleware,accountController.getTransactions);
+router.get('/getTransactions',authmiddleware,accountController.getTransactions);
 
 module.exports = router;

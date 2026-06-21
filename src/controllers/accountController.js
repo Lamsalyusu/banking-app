@@ -51,8 +51,8 @@ const accountController = {
         try{
             const userId = req.user.id;
             const { amount } = req.body;
-            const query = 'SELECT balance FROM accounts WHERE user_id =$1';
-            const result = await db.query(query,[userId])
+            // const query = 'SELECT balance FROM accounts WHERE user_id =$1';
+            // const result = await db.query(query,[userId])
             const account = await AccountModel.findByUserID(userId);
             if (!account)
             {
@@ -66,7 +66,7 @@ const accountController = {
             }
             const updateQuery = 'UPDATE accounts SET balance = balance - $1 WHERE id = $2 RETURNING *';
             const update = await db.query(updateQuery,[amount,account.id])
-            TransactionModel.createTransaction(account.id, null, amount, 'withdraw', 'Withdrawal');
+            await TransactionModel.createTransaction(account.id, null, amount, 'withdraw', 'Withdrawal');
 
             res.status(200).json({
                 message:'Withdraw Successful',
@@ -83,7 +83,7 @@ const accountController = {
             const { amount,receiverAccountNumber } = req.body;
 
             if(!receiverAccountNumber){
-                return sessionStorage.status(400).json({error:'Recipient Account number is required'})
+                return res.status(400).json({error:'Recipient Account number is required'})
             }
             if (!amount || isNaN(amount) || amount <= 0) 
                 {
@@ -137,8 +137,8 @@ const accountController = {
         if (!findaccount){
             return res.status(404).json({error:'Account not found'});
         }
-        const transaction = TransactionModel.getTransactionByAccountId(findaccount.id);
-        res.status(200).json({transaction});
+        const transactions = await TransactionModel.getTransactionByAccountId(findaccount.id);
+        res.status(200).json({transactions});
         }
         catch(error){
             res.status(500).json({error:error.message});

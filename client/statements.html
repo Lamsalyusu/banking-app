@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureBank Nepal — Statements</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--navy:#0a1628;--accent:#1a56db;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f3f4f6;--white:#fff;--success:#16a34a;--danger:#dc2626;--sidebar-w:240px}
+  html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:60px 1fr;min-height:100vh}
+  .topbar{grid-column:1/-1;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:100}
+  .topbar-logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+  .logo-icon i{color:#fff;font-size:15px}
+  .logo-name{color:#fff;font-size:14px;font-weight:600}
+  .topbar-right{display:flex;align-items:center;gap:8px}
+  .tb-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .tb-btn i{color:rgba(255,255,255,0.7);font-size:14px}
+  .avatar-btn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:none;border-radius:20px;padding:4px 12px 4px 4px;cursor:pointer}
+  .avatar{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+  .avatar-name{color:rgba(255,255,255,0.8);font-size:12px;font-weight:500}
+  .sidebar{background:var(--white);border-right:1px solid var(--border);padding:1.5rem 0;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px)}
+  .nav-section-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;padding:0 1.25rem;margin:16px 0 6px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;font-size:13px;color:var(--muted);cursor:pointer;text-decoration:none;border-right:2px solid transparent;transition:all 0.1s}
+  .nav-item i{font-size:16px;width:18px;text-align:center}
+  .nav-item:hover{background:var(--bg);color:var(--text)}
+  .nav-item.active{color:var(--accent);background:#eff6ff;border-right-color:var(--accent);font-weight:600}
+  .nav-bottom{margin-top:auto;padding:1rem 0;border-top:1px solid var(--border)}
+  .main{padding:1.5rem}
+
+  /* PAGE */
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:gap}
+  .page-title{font-size:20px;font-weight:700;letter-spacing:-0.02em}
+  .page-sub{font-size:13px;color:var(--muted);margin-top:4px}
+  .header-actions{display:flex;align-items:center;gap:10px}
+
+  /* CONTROLS */
+  .controls{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;flex-wrap:wrap}
+  .select-wrap{position:relative}
+  .select-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+  .controls select{padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer;appearance:none;min-width:140px}
+  .controls select:focus{border-color:var(--accent)}
+  .btn-print{display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.15s}
+  .btn-print:hover{opacity:0.85}
+  .btn-export{display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:border-color 0.15s}
+  .btn-export:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* SUMMARY CARDS */
+  .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.5rem}
+  .sum-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+  .sum-card.main{background:linear-gradient(135deg,#0a1628 0%,#1a3a8f 100%);border-color:transparent}
+  .sum-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .sum-card.main .sum-label{color:rgba(255,255,255,0.6)}
+  .sum-amount{font-size:20px;font-weight:700;letter-spacing:-0.02em}
+  .sum-card.main .sum-amount{color:#fff}
+  .sum-change{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px}
+  .pos{color:var(--success)}
+  .neg{color:var(--danger)}
+
+  /* STATEMENT CARD */
+  .statement-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .statement-header{padding:1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .statement-title{font-size:14px;font-weight:700}
+  .statement-period{font-size:12px;color:var(--muted)}
+  .tx-row{display:flex;align-items:center;gap:12px;padding:12px 1.25rem;border-bottom:1px solid var(--border);transition:background 0.1s}
+  .tx-row:last-child{border-bottom:none}
+  .tx-row:hover{background:var(--bg)}
+  .tx-dot{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .tx-dot.d{background:#f0fdf4}.tx-dot.d i{color:var(--success);font-size:16px}
+  .tx-dot.w{background:#fef2f2}.tx-dot.w i{color:var(--danger);font-size:16px}
+  .tx-dot.t{background:#eff6ff}.tx-dot.t i{color:var(--accent);font-size:16px}
+  .tx-info{flex:1}
+  .tx-name{font-size:13px;font-weight:600}
+  .tx-meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .tx-right{text-align:right}
+  .tx-amount{font-size:14px;font-weight:700}
+  .tx-amount.pos{color:var(--success)}
+  .tx-amount.neg{color:var(--danger)}
+  .badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:3px;font-weight:600}
+  .badge.success{background:#f0fdf4;color:var(--success)}
+  .empty{padding:3rem;text-align:center;color:var(--muted);font-size:13px}
+  .empty i{font-size:36px;margin-bottom:10px;display:block;opacity:0.25}
+
+  /* PRINT STYLES */
+  @media print {
+    .sidebar,.topbar,.controls,.btn-print,.btn-export{display:none!important}
+    .layout{display:block}
+    .main{padding:0}
+    body{background:#fff}
+    .print-header{display:block!important}
+    .statement-card{border:none;box-shadow:none}
+    .tx-row:hover{background:none}
+    .summary-grid{grid-template-columns:repeat(4,1fr)}
+  }
+
+  .print-header{display:none;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--navy)}
+  .print-header .ph-logo{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .print-header .ph-name{font-size:18px;font-weight:700;color:var(--navy)}
+  .print-header .ph-details{font-size:12px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:4px}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo"><div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div><span class="logo-name">SecureBank Nepal</span></div>
+    <div class="topbar-right">
+      <button class="tb-btn"><i class="fa-regular fa-bell"></i></button>
+      <button class="avatar-btn" onclick="logout()"><div class="avatar" id="avatarInitials">YL</div><span class="avatar-name" id="topbarName">User</span></button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="nav-section-label">Main</div>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a href="deposit.html" class="nav-item"><i class="fa-solid fa-arrow-down-to-bracket"></i> Deposit</a>
+      <a href="withdraw.html" class="nav-item"><i class="fa-solid fa-arrow-up-from-bracket"></i> Withdraw</a>
+      <a href="transfer.html" class="nav-item"><i class="fa-solid fa-right-left"></i> Transfer</a>
+      <div class="nav-section-label">Reports</div>
+      <a href="transactions.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a>
+      <a href="statements.html" class="nav-item active"><i class="fa-regular fa-file-lines"></i> Statements</a>
+    </div>
+    <div class="nav-bottom">
+      <a href="#" class="nav-item"><i class="fa-regular fa-user"></i> Profile</a>
+      <a href="#" class="nav-item" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Print Header (only visible when printing) -->
+    <div class="print-header">
+      <div class="ph-logo">
+        <div class="logo-icon" style="background:#1a56db;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center">
+          <i class="fa-solid fa-building-columns" style="color:#fff;font-size:16px"></i>
+        </div>
+        <div class="ph-name">SecureBank Nepal</div>
+      </div>
+      <div class="ph-details">
+        <div><strong>Account Holder:</strong> <span id="printName">—</span></div>
+        <div><strong>Statement Period:</strong> <span id="printPeriod">—</span></div>
+        <div><strong>Generated:</strong> <span id="printDate">—</span></div>
+        <div><strong>Account:</strong> <span id="printAcc">—</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="page-title">Account Statement</div>
+        <div class="page-sub">Monthly summary of your transactions</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn-export" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <div class="select-wrap">
+        <i class="fa-regular fa-calendar"></i>
+        <select id="monthSelect" onchange="filterByMonth()"></select>
+      </div>
+      <div class="select-wrap">
+        <i class="fa-solid fa-filter"></i>
+        <select id="typeFilter" onchange="filterByMonth()">
+          <option value="all">All types</option>
+          <option value="deposit">Deposits only</option>
+          <option value="withdraw">Withdrawals only</option>
+          <option value="transfer">Transfers only</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-grid">
+      <div class="sum-card main">
+        <div class="sum-label">Closing Balance</div>
+        <div class="sum-amount" id="closingBal">NPR —</div>
+        <div class="sum-change" style="color:rgba(255,255,255,0.5)"><i class="fa-solid fa-shield-halved"></i> Verified account</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Total deposited</div>
+        <div class="sum-amount pos" id="totalIn">NPR 0</div>
+        <div class="sum-change pos"><i class="fa-solid fa-arrow-trend-up"></i> <span id="inCount">0 transactions</span></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Total withdrawn</div>
+        <div class="sum-amount neg" id="totalOut">NPR 0</div>
+        <div class="sum-change neg"><i class="fa-solid fa-arrow-trend-down"></i> <span id="outCount">0 transactions</span></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Net change</div>
+        <div class="sum-amount" id="netChange">NPR 0</div>
+        <div class="sum-change" id="netLabel"><span id="txCount">0 total transactions</span></div>
+      </div>
+    </div>
+
+    <!-- STATEMENT TABLE -->
+    <div class="statement-card">
+      <div class="statement-header">
+        <div class="statement-title">Transaction details</div>
+        <div class="statement-period" id="statementPeriod">Loading...</div>
+      </div>
+      <div id="txList"><div class="empty"><i class="fa-solid fa-spinner fa-spin"></i>Loading...</div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'index.html';
+
+  document.getElementById('topbarName').textContent = (user.fullName || '').split(' ')[0];
+  document.getElementById('avatarInitials').textContent = (user.fullName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  document.getElementById('printName').textContent = user.fullName || '—';
+  document.getElementById('printDate').textContent = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'});
+
+  let allTx = [];
+  const fmt = v => `NPR ${Math.abs(v).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Populate month selector
+  function populateMonths(txs) {
+    const seen = new Set();
+    const select = document.getElementById('monthSelect');
+    select.innerHTML = '';
+    txs.forEach(tx => {
+      const d = new Date(tx.created_at);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = `${months[d.getMonth()]} ${d.getFullYear()}`;
+        select.appendChild(opt);
+      }
+    });
+    // Add current month if no transactions
+    if (txs.length === 0) {
+      const now = new Date();
+      const opt = document.createElement('option');
+      opt.value = `${now.getFullYear()}-${now.getMonth()}`;
+      opt.textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+      select.appendChild(opt);
+    }
+  }
+
+  function filterByMonth() {
+    const [year, month] = document.getElementById('monthSelect').value.split('-').map(Number);
+    const type = document.getElementById('typeFilter').value;
+    const monthName = `${months[month]} ${year}`;
+
+    let filtered = allTx.filter(tx => {
+      const d = new Date(tx.created_at);
+      return d.getFullYear() === year && d.getMonth() === month;
+    });
+
+    if (type !== 'all') filtered = filtered.filter(tx => tx.transaction_type === type);
+
+    // Update print period
+    document.getElementById('printPeriod').textContent = monthName;
+    document.getElementById('statementPeriod').textContent = `${monthName} · ${filtered.length} transactions`;
+
+    // Calculate stats
+    let inAmt = 0, outAmt = 0, inCnt = 0, outCnt = 0;
+    filtered.forEach(tx => {
+      if (tx.transaction_type === 'deposit') { inAmt += parseFloat(tx.amount); inCnt++; }
+      else { outAmt += parseFloat(tx.amount); outCnt++; }
+    });
+    const net = inAmt - outAmt;
+
+    document.getElementById('totalIn').textContent = fmt(inAmt);
+    document.getElementById('totalOut').textContent = fmt(outAmt);
+    document.getElementById('netChange').textContent = (net >= 0 ? '+' : '-') + fmt(net);
+    document.getElementById('netChange').className = `sum-amount ${net >= 0 ? 'pos' : 'neg'}`;
+    document.getElementById('inCount').textContent = `${inCnt} transaction${inCnt !== 1 ? 's' : ''}`;
+    document.getElementById('outCount').textContent = `${outCnt} transaction${outCnt !== 1 ? 's' : ''}`;
+    document.getElementById('txCount').textContent = `${filtered.length} total transactions`;
+
+    renderTx(filtered);
+  }
+
+  function renderTx(txs) {
+    const el = document.getElementById('txList');
+    if (!txs.length) {
+      el.innerHTML = '<div class="empty"><i class="fa-solid fa-inbox"></i>No transactions for this period</div>';
+      return;
+    }
+    el.innerHTML = txs.map(tx => {
+      const type = tx.transaction_type;
+      const isD = type === 'deposit', isW = type === 'withdraw';
+      const cls = isD ? 'd' : isW ? 'w' : 't';
+      const icon = isD ? 'fa-arrow-down' : isW ? 'fa-arrow-up' : 'fa-right-left';
+      const label = type.charAt(0).toUpperCase() + type.slice(1);
+      const amtCls = isD ? 'pos' : 'neg';
+      const prefix = isD ? '+' : '-';
+      const date = new Date(tx.created_at).toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div class="tx-row">
+        <div class="tx-dot ${cls}"><i class="fa-solid ${icon}"></i></div>
+        <div class="tx-info"><div class="tx-name">${label}</div><div class="tx-meta">${date}</div></div>
+        <div class="tx-right">
+          <div class="tx-amount ${amtCls}">${prefix}${fmt(tx.amount)}</div>
+          <span class="badge success"><i class="fa-solid fa-check"></i>${tx.status || 'success'}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadData() {
+    try {
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const [balRes, txRes] = await Promise.all([
+        fetch('http://localhost:5000/api/account/getBalance', { headers }),
+        fetch('http://localhost:5000/api/account/getTransactions', { headers })
+      ]);
+      if (!balRes.ok) { logout(); return; }
+      const balData = await balRes.json();
+      document.getElementById('closingBal').textContent = fmt(balData.balance);
+      document.getElementById('printAcc').textContent = balData.account_number || '—';
+
+      if (txRes.ok) {
+        const txData = await txRes.json();
+        allTx = txData.transactions || [];
+        populateMonths(allTx);
+        filterByMonth();
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+  loadData();
+</script>
+</body>
+</html>
